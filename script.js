@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentIndex = 0;
     let shuffledWords = [];
     let trialData = []; // Array to hold all trial data
+    // let globalKeydownEnabled = true; // Flag to control the global keydown listener
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -29,8 +30,10 @@ document.addEventListener("DOMContentLoaded", function() {
     function startPhase1() {
         nameInputOverlay.style.display = 'none'; // Hide the name input overlay
         welcomeOverlay.style.display = 'block';  // Show the welcome overlay
+        document.getElementById("continue-phase1").style.display = 'block'; // Show the continue button
         textInput.style.display = 'none';  // Ensure the text input is hidden in Phase 1
         currentPhase = 1;  // Update phase to Phase 1
+        // globalKeydownEnabled = false; // Disable the global keydown listener temporarily
     }
 
     function playNextWordPhase1() {
@@ -52,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
             currentIndex = 0;
             wordDisplay.style.display = 'none';
             phase2Instructions.style.display = 'block';
+            document.getElementById("continue-phase2").style.display = 'block'; // Show the continue button
         }
     }
 
@@ -62,7 +66,6 @@ document.addEventListener("DOMContentLoaded", function() {
         submitTranslationButton.style.display = 'block'; // Show the submit button in Phase 2
         wordDisplay.textContent = "Écoutez attentivement le mot et entrez la traduction."; // Instruction to listen
         shuffledWords = shuffleArray([...wordAudioPairs]); // Reshuffle the array
-        // shuffledWords = shuffledWords.slice(0, 2);
     
         playNextWordPhase2();
     }
@@ -72,10 +75,10 @@ document.addEventListener("DOMContentLoaded", function() {
             const selectedPair = shuffledWords[currentIndex];
             audioPlayer.src = selectedPair.audio;
             audioPlayer.play();
+            textInput.value = '';
 
             // Wait for the audio to end before prompting user input
             audioPlayer.onended = function() {
-                textInput.value = '';
                 textInput.focus();
             };
         } else {
@@ -90,7 +93,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function handleUserInput() {
-        if (currentPhase === 2 && textInput.style.display !== 'none') {
+        if (currentPhase === 2 && !textInput.value.trim()) {
+            alert("Veuiller tenter de répondre ou entrez un caractére si vous ne connaissez pas la réponse.")
+        }
+        else if (currentPhase === 2 && textInput.style.display !== 'none') {
             // Collect data for this trial
             let trial = {
                 french_word: shuffledWords[currentIndex].word,
@@ -134,8 +140,47 @@ document.addEventListener("DOMContentLoaded", function() {
         link.click(); // This will trigger the download
     }
 
-    // Handle name submission in Phase 0
+    // Unified keydown event listener to handle Enter key across phases
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            if (currentPhase === 0 && participantNameInput === document.activeElement) {
+                // Handle name submission
+                participantName = participantNameInput.value.trim();
+                if (participantName) {
+                    startPhase1(); // Move to Phase 1
+                } else {
+                    alert("Veuillez entrer votre nom pour continuer.");
+                }
+                // event.preventDefault(); // Prevent further handling of the Enter key event
+            } else if (currentPhase === 1 && welcomeOverlay.style.display !== 'none') {
+                // Hide welcome overlay and start Phase 1 instructions
+                document.getElementById("continue-phase1").click(); // Simulate the click on the continue button
+            } else if (currentPhase === 2 && phase2Instructions.style.display !== 'none') {
+                // Hide Phase 2 instructions and start Phase 2
+                document.getElementById("continue-phase2").click(); // Simulate the click on the continue button
+            } else if (currentPhase === 2 && textInput.style.display !== 'none') {
+                handleUserInput(); // Handle translation input in Phase 2
+            } else if (currentPhase === 3 && thanksMessage.style.display !== 'none') {
+                handleUserInput(); // End the experiment
+            }
+        }
+    });
+
+    // Add event listener for the Continue button in Phase 1
+    document.getElementById("continue-phase1").addEventListener("click", function() {
+        document.getElementById("continue-phase1").style.display = 'none'; // Hide the button after clicking
+        welcomeOverlay.style.display = 'none'; // Hide the welcome overlay
+        wordDisplay.style.display = 'block'; // Show word display
+        shuffledWords = shuffleArray([...wordAudioPairs]); // Shuffle words
+        // shuffledWords = shuffledWords.slice(0,2); // For testing
+        currentIndex = 0; // Reset index for Phase 1
+        // globalKeydownEnabled = true; // Re-enable the global keydown listener
+        playNextWordPhase1(); // Start Phase 1 word playback
+    });
+
+    // Add event listener for the name
     submitNameButton.addEventListener("click", function() {
+        // Handle name submission
         participantName = participantNameInput.value.trim();
         if (participantName) {
             startPhase1(); // Move to Phase 1
@@ -144,42 +189,16 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // Add event listener for the Continue button in Phase 2
+    document.getElementById("continue-phase2").addEventListener("click", function() {
+        document.getElementById("continue-phase2").style.display = 'none'; // Hide the button after clicking
+        startPhase2(); // Start Phase 2
+    });
+
     // Add event listener for the submit button in Phase 2
     submitTranslationButton.addEventListener("click", function() {
-        console.log('Submit button clicked in Phase 2'); // Debugging info
+        // console.log('Submit button clicked in Phase 2'); // Debugging info
         handleUserInput();
-    });
-
-    // Handle name submission via Enter key in Phase 0
-    participantNameInput.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            participantName = participantNameInput.value.trim();
-            if (participantName) {
-                startPhase1(); // Move to Phase 1
-            } else {
-                alert("Veuillez entrer votre nom pour continuer.");
-            }
-        }
-    });
-
-    // Start Phase 1 after pressing Enter on the welcome screen
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            if (currentPhase === 1 && welcomeOverlay.style.display !== 'none') {
-                welcomeOverlay.style.display = 'none'; // Hide the welcome overlay
-                wordDisplay.style.display = 'block'; // Show word display
-                shuffledWords = shuffleArray([...wordAudioPairs]); // Shuffle words
-                // shuffledWords = shuffledWords.slice(0,2); // For testing
-                currentIndex = 0; // Reset index for Phase 1
-                playNextWordPhase1(); // Start Phase 1 word playback
-            } else if (currentPhase === 2 && phase2Instructions.style.display !== 'none') {
-                startPhase2(); // Start Phase 2
-            } else if (currentPhase === 2 && textInput.style.display !== 'none') {
-                handleUserInput(); // Handle translation input in Phase 2
-            } else if (currentPhase === 3 && thanksMessage.style.display !== 'none') {
-                handleUserInput(); // End the experiment
-            }
-        }
     });
 
     // Load the CSV file and initialize the word list
