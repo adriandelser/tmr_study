@@ -4,10 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>French-Japanese Word Player</title>
+    <style>
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.2em;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-    <h1 id="word-display">Word will appear here</h1>
-    <audio id="audio-player" controls></audio>
+    <div id="welcome-overlay">
+        <p id="welcome-text">
+            Bienvenue dans cette expérience !<br><br>
+            Dans cette première phase, vous allez entendre une série de mots en japonais. 
+            Votre tâche est de les écouter attentivement et d'essayer de retenir ce que vous pouvez. 
+            Ne vous inquiétez pas si vous trouvez cela difficile au début ; il y a beaucoup de mots à retenir, et ils passent assez vite.<br><br>
+            Écoutez-les attentivement et essayez de retenir ce que vous pouvez dès maintenant.<br><br>
+            <strong>Appuyez sur Entrée pour commencer l'expérience.</strong>
+        </p>
+    </div>
+
+    <h1 id="word-display" style="display:none;">Word will appear here</h1>
+    <audio id="audio-player"></audio>
     <script src="script.js"></script>
 </body>
 </html>

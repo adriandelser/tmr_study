@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
+    const welcomeOverlay = document.getElementById("welcome-overlay");
     const wordDisplay = document.getElementById("word-display");
     const audioPlayer = document.getElementById("audio-player");
 
@@ -20,6 +21,18 @@ document.addEventListener("DOMContentLoaded", function() {
                 audioPlayer.play();
             }
 
-            setInterval(playRandomWord, 5000); // Change word every 5 seconds
+            function startExperiment() {
+                welcomeOverlay.style.display = 'none'; // Hide the welcome overlay
+                wordDisplay.style.display = 'block'; // Show the word display
+                playRandomWord(); // Start playing the first word
+                setInterval(playRandomWord, 5000); // Continue changing the word every 5 seconds
+            }
+
+            // Wait for the user to press Enter
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    startExperiment();
+                }
+            }, { once: true });
         });
 });
