@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>French-Japanese Word Player</title>
+    <style>
+        /* CSS styling goes here */
+        /* Hide the play/pause button but keep the volume control */
+        /* Hide the play/pause button but keep the volume control */
+        /* audio::-webkit-media-controls-play-button {
+            display: none;
+        }
+
+        audio::-webkit-media-controls-panel {
+            display: flex !important;
+            justify-content: flex-end; 
+        }
+
+        audio::-webkit-media-controls-timeline,
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display,
+        audio::-webkit-media-controls-rewind-button,
+        audio::-webkit-media-controls-fast-forward-button,
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-seek-back-button,
+        audio::-webkit-media-controls-seek-forward-button,
+        audio::-webkit-media-controls-fullscreen-button,
+        audio::-webkit-media-controls-download-button,
+        audio::-webkit-media-controls-track-list,
+        audio::-webkit-media-controls-mute-button {
+            display: none;
+        }
+
+        audio::-webkit-media-controls-volume-control-container {
+            display: block;
+        }
+        
+        audio {
+            width: 200px; 
+            display: block;
+            margin: 0 auto;
+        } */
+
+        #name-input-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        #name-instructions {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        #participant-name {
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 1em;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        #submit-name {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+
+        #welcome-overlay, #phase2-instructions, #thanks-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.2em;
+            z-index: 1000;
+        }
+        #word-display, #text-input {
+            display: none;
+            text-align: center;
+            margin: 20px;
+        }
+        #text-input {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            width: 80%;
+            max-width: 400px;
+            font-size: 1.2em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+        }
+
+        #submit-translation {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+        }
+
+        #submit-translation:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        /* Style for the Continue buttons */
+        #continue-phase1, #continue-phase2 {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        #continue-phase1:hover, #continue-phase2:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="name-input-overlay">
+        <p id="name-instructions">
+            Veuillez entrer votre nom pour commencer l'expérience :
+        </p>
+        <input type="text" id="participant-name" placeholder="Entrez votre nom ici...">
+        <button id="submit-name">Soumettre</button>
+    </div>
+    
+    <div id="welcome-overlay" style="display:none;">
+        <p id="welcome-text">
+            Bienvenue dans cette expérience !<br><br>
+            Dans cette première phase, vous allez entendre une série de mots en japonais. 
+            Votre tâche est de les écouter attentivement et d'essayer de retenir ce que vous pouvez. 
+            Ne vous inquiétez pas si vous trouvez cela difficile au début ; il y a beaucoup de mots à retenir, et ils passent assez vite.<br><br>
+            Écoutez-les attentivement et essayez de retenir ce que vous pouvez dès maintenant.<br><br>
+            <strong>Veuillez d'abord augmenter le volume de votre son. Dès que vous continuez, le premier son se fera entendre, donc soyez prêt. Ensuite, appuyez sur Entrée ou cliquez sur le bouton "Continuer" pour commencer l'expérience.</strong>
+        </p>
+        <button id="continue-phase1" style="display:none;">Continuer</button>
+    </div>
+
+
+
+    <h1 id="word-display">Word will appear here</h1>
+    <!-- <audio id="audio-player" controls></audio> -->
+    <audio id="audio-player"></audio>
+
+    <!-- These are the elements needed for Phase 2 -->
+    <input type="text" id="text-input" placeholder="Entrez la traduction ici..." style="display: none;" />
+    <button id="submit-translation" style="display: none;">Soumettre</button>    
+
+    <div id="phase2-instructions" style="display:none;">
+        <p>
+            Phase 1 terminée, passons à la phase 2.<br><br>
+            Maintenant, vous allez à nouveau entendre la série de mots en japonais. 
+            Votre tâche est de traduire chacun de ces mots en français. Après avoir entendu chaque mot, 
+            veuillez entrer la traduction française du mot 
+            que vous venez d'entendre, puis appuyez sur la touche Entrée ou cliquez sur le bouton "Soumettre". 
+            Si vous ne vous rappelez plus de la traduction, mettez un "/" ou autre caractère.
+
+            Voici quelques points importants à retenir :
+
+            - Aucune correction ou feedback ne sera donné après la saisie de votre réponse.
+            - Lorsque vous êtes satisfait de votre réponse, appuyez sur la touche Entrée pour passer au mot suivant.
+            - Lors de cette première session, vous ne vous rappellerez certainement que de très peu de mots, 
+            et c'est totalement normal, faites au mieux !<br><br>
+            <strong>Appuyez sur Entrée ou appuyez sur le bouton "Continuer" pour commencer l'expérience.</strong>
+        </p>
+        <button id="continue-phase2" style="display:none;">Continuer</button>
+    </div>
+
+
+    <div id="thanks-message" style="display:none;">
+        <p>
+            Merci beaucoup pour votre participation !<br><br>
+            Un fichier .csv va maintenant se télécharger, n'oubliez pas de m'envoyer les résultats de cette session. 
+           <br><br>
+            <strong>A bientot !</strong>
+        </p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

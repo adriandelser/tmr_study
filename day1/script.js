@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
             audioPlayer.onended = function() {
                 textInput.focus();
             };
+
         } else {
             // Show thank you message
             wordDisplay.style.display = 'none';
@@ -124,21 +125,22 @@ document.addEventListener("DOMContentLoaded", function() {
     // Convert the trial data to CSV format and trigger a download
     function downloadCSV() {
         let csvContent = "data:text/csv;charset=utf-8," 
-            + "french_word,japanese_audio,thisRepN,thisTrialN,thisN,thisIndex,thisRow_t,notes,response,participant\n";
-
+            + "french_word,japanese_audio,response,participant\n";  // Only include relevant columns
+    
         trialData.forEach(function(row) {
-            let rowContent = `${row.french_word},${row.japanese_audio},${row.thisRepN},${row.thisTrialN},${row.thisN},${row.thisIndex},${row.thisRow_t},${row.notes},${row.response},${row.participant}`;
+            let rowContent = `${row.french_word},${row.japanese_audio},${row.response},${row.participant}`;
             csvContent += rowContent + "\n";
         });
-
+    
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "experiment_data.csv");
+        link.setAttribute("download", `${participantName}_day_1.csv`);  // Dynamic naming for Day 1
         document.body.appendChild(link); // Required for FF
-
+    
         link.click(); // This will trigger the download
     }
+    
 
     function handleNameSubmission(){
         // Handle name submission
@@ -201,13 +203,16 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("assets/liste_mot_wav.csv")
+    fetch("../assets/liste_mot_wav.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");
             wordAudioPairs = lines.map(line => {
                 const [word, audioPath] = line.split(',');
-                return { word: word.trim(), audio: audioPath.trim() };
+                return {
+                    word: word.trim(),
+                    audio: `../${audioPath.trim()}`
+                };
             });
         });
 });
