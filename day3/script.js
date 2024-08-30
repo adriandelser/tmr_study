@@ -139,33 +139,31 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    function sendCSV(csvContent, filename, callback) {
-        fetch('/.netlify/functions/sendEmail', {  // Adjust the path to match your structure
+    function sendCSV(csvContent, filename, participantName, day, callback) {
+        fetch('/.netlify/functions/sendEmail', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 csvContent: csvContent,
-                filename: filename
+                filename: filename,
+                participantName: participantName,
+                day: day
             })
         })
         .then(response => response.json())
         .then(data => {
             console.log(data.message); // Handle the server response
-            if (callback) {
-                callback();  // Call the callback function after sending the email
-            }
+            if (callback) callback();  // Trigger the callback to download the file
         })
         .catch(error => {
             console.error('Error sending the email:', error);
-            if (callback) {
-                callback();  // Call the callback function even if there's an error (optional)
-            }
+            if (callback) callback();  // Still trigger the callback to download the file
         });
     }
     
-    // Convert the trial data to CSV format and trigger an email and download
+    
     function downloadCSV() {
         let csvContent = "french_word,japanese_audio,phase1_response,phase2_response,participant\n";
     
@@ -175,9 +173,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     
         const filename = `${participantName}_day_3.csv`;
+        const day = 3;  // Replace with the correct day for the experiment
     
-        // First, send the CSV via email, then trigger the download
-        sendCSV(csvContent, filename, function() {
+        // Send the CSV via email, then trigger the download
+        sendCSV(csvContent, filename, participantName, day, function() {
             // After sending the email, trigger the download
             const encodedUri = encodeURI(`data:text/csv;charset=utf-8,${csvContent}`);
             const link = document.createElement("a");
@@ -188,6 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
             link.click(); // This will trigger the download
         });
     }
+    
     
     
 

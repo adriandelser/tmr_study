@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 exports.handler = async function(event, context) {
     if (event.httpMethod === 'POST') {
-        const { csvContent, filename } = JSON.parse(event.body);
+        const { csvContent, filename, participantName, day } = JSON.parse(event.body);
 
         // Create a transporter object using Gmail
         let transporter = nodemailer.createTransport({
@@ -16,8 +16,8 @@ exports.handler = async function(event, context) {
         // Setup email data
         let mailOptions = {
             from: process.env.GMAIL_USERNAME, // Sender address
-            to: 'adrian.delser@gmail.com', // Your recipient email
-            subject: 'CSV File from Experiment', // Subject line
+            to: 'camille.alba01@gmail.com', // Your recipient email
+            subject: `TMR Experiment Results: ${participantName} - Day ${day}`,  // Dynamic subject line
             text: 'Please find the attached CSV file from the experiment.', // Plain text body
             attachments: [
                 {
