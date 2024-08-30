@@ -35,10 +35,14 @@ exports.handler = async function(event, context) {
                 body: JSON.stringify({ message: 'Email sent successfully!' }),
             };
         } catch (error) {
-            console.error('Error sending email:', error);
+            console.error('Error sending email:',process.env.GMAIL_USERNAME,process.env.GMAIL_PASSWORD, error);
             return {
                 statusCode: 500,
-                body: JSON.stringify({ message: 'Error sending email', error }),
+                body: JSON.stringify({
+                    message: 'Error sending email',
+                    error: error.message,  // Log the error message
+                    username: process.env.EMAIL_USERNAME  // Include the username in the response
+                }),
             };
         }
     } else {
