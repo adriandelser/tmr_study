@@ -140,17 +140,21 @@ document.addEventListener("DOMContentLoaded", function() {
         link.click(); // This will trigger the download
     }
 
+    function handleNameSubmission(){
+        // Handle name submission
+        participantName = participantNameInput.value.trim();
+        if (participantName) {
+            startPhase1(); // Move to Phase 1
+        } else {
+            alert("Veuillez entrer votre nom pour continuer.");
+        }
+    }
+
     // Unified keydown event listener to handle Enter key across phases
     document.addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
             if (currentPhase === 0 && participantNameInput === document.activeElement) {
-                // Handle name submission
-                participantName = participantNameInput.value.trim();
-                if (participantName) {
-                    startPhase1(); // Move to Phase 1
-                } else {
-                    alert("Veuillez entrer votre nom pour continuer.");
-                }
+                handleNameSubmission()
                 // event.preventDefault(); // Prevent further handling of the Enter key event
             } else if (currentPhase === 1 && welcomeOverlay.style.display !== 'none') {
                 // Hide welcome overlay and start Phase 1 instructions
@@ -181,12 +185,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Add event listener for the name
     submitNameButton.addEventListener("click", function() {
         // Handle name submission
-        participantName = participantNameInput.value.trim();
-        if (participantName) {
-            startPhase1(); // Move to Phase 1
-        } else {
-            alert("Veuillez entrer votre nom pour continuer.");
-        }
+        handleNameSubmission()
     });
 
     // Add event listener for the Continue button in Phase 2
