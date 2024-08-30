@@ -180,6 +180,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("continue-phase1").click(); // Simulate the click on the continue button
             } else if (currentPhase === 1 && textInput.style.display !== 'none') {
                 handleUserInput(); // Handle translation input with feedback in Phase 1
+            } else if (currentPhase === 2 && phase2Instructions.style.display !== 'none') {
+                document.getElementById("continue-phase2").click()
             } else if (currentPhase === 2 && textInput.style.display !== 'none') {
                 handleUserInput(); // Handle translation input without feedback in Phase 2
             } else if (currentPhase === 2 && phase2Instructions.style.display !== 'none') {

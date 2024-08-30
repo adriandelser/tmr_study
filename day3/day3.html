@@ -6,41 +6,13 @@
     <title>French-Japanese Word Player</title>
     <style>
         /* CSS styling goes here */
-        /* Hide the play/pause button but keep the volume control */
-        /* Hide the play/pause button but keep the volume control */
-        /* audio::-webkit-media-controls-play-button {
-            display: none;
+        #feedback-display {
+            font-size: 2em;       /* Make the text larger */
+            color: green;         /* Set the text color to green */
+            font-weight: bold;    /* Make the text bold */
+            margin-top: 20px;     /* Add some spacing above the feedback */
         }
 
-        audio::-webkit-media-controls-panel {
-            display: flex !important;
-            justify-content: flex-end; 
-        }
-
-        audio::-webkit-media-controls-timeline,
-        audio::-webkit-media-controls-current-time-display,
-        audio::-webkit-media-controls-time-remaining-display,
-        audio::-webkit-media-controls-rewind-button,
-        audio::-webkit-media-controls-fast-forward-button,
-        audio::-webkit-media-controls-play-button,
-        audio::-webkit-media-controls-seek-back-button,
-        audio::-webkit-media-controls-seek-forward-button,
-        audio::-webkit-media-controls-fullscreen-button,
-        audio::-webkit-media-controls-download-button,
-        audio::-webkit-media-controls-track-list,
-        audio::-webkit-media-controls-mute-button {
-            display: none;
-        }
-
-        audio::-webkit-media-controls-volume-control-container {
-            display: block;
-        }
-        
-        audio {
-            width: 200px; 
-            display: block;
-            margin: 0 auto;
-        } */
 
         #name-input-overlay {
             position: fixed;
@@ -160,12 +132,19 @@
     
     <div id="welcome-overlay" style="display:none;">
         <p id="welcome-text">
-            Bienvenue dans cette expérience !<br><br>
-            Dans cette première phase, vous allez entendre une série de mots en japonais. 
-            Votre tâche est de les écouter attentivement et d'essayer de retenir ce que vous pouvez. 
-            Ne vous inquiétez pas si vous trouvez cela difficile au début ; il y a beaucoup de mots à retenir, et ils passent assez vite.<br><br>
-            Écoutez-les attentivement et essayez de retenir ce que vous pouvez dès maintenant.<br><br>
-            <strong>Veuillez d'abord augmenter le volume de votre son. Dès que vous continuez, le premier son se fera entendre, donc soyez prêt. Ensuite, appuyez sur Entrée ou cliquez sur le bouton "Continuer" pour commencer l'expérience.</strong>
+            Débutons par la phase 1.<br><br>
+            Vous allez à nouveau entendre la série de mots en japonais. 
+            Votre tâche est de traduire chacun de ces mots en français. Après avoir entendu chaque mot, 
+            veuillez entrer la traduction française du mot puis appuyez sur la touche Entrée ou cliquez sur le bouton "Soumettre".
+            <strong>Mais ici, un feedback/la correction vous sera donnée, et vous permettra alors de voir si vous avez eu juste ou non.</strong>
+            Si vous ne vous rappelez plus de la traduction, mettez un "/" ou autre caractère, et essayez de mémoriser à l'aide du feedback.
+
+            Voici quelques points importants à retenir :
+
+            - Lorsque vous êtes satisfait de votre réponse, appuyez sur la touche Entrée pour passer au mot suivant.
+            - N'oubliez pas de prêter attention au feedback qui s'affiche en vert après la saisie de votre réponse.
+            - Après lecture du feedback, appuyez sur Entrée ou "Continuez", et tenez vous prêt.e à entendre le mot suivant.<br><br>
+            <strong>Appuyez sur Entrée ou appuyez sur le bouton "Continuer" pour commencer l'expérience.</strong>
         </p>
         <button id="continue-phase1" style="display:none;">Continuer</button>
     </div>
@@ -193,8 +172,7 @@
 
             - Aucune correction ou feedback ne sera donné après la saisie de votre réponse.
             - Lorsque vous êtes satisfait de votre réponse, appuyez sur la touche Entrée pour passer au mot suivant.
-            - Lors de cette première session, vous ne vous rappellerez certainement que de très peu de mots, 
-            et c'est totalement normal, faites au mieux !<br><br>
+            <br><br>
             <strong>Appuyez sur Entrée ou appuyez sur le bouton "Continuer" pour commencer l'expérience.</strong>
         </p>
         <button id="continue-phase2" style="display:none;">Continuer</button>
