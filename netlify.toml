@@ -1,0 +1,3 @@
+[build]
+  publish = "public"  # Adjust this to your output directory
+  functions = "functions"  # Directory for serverless functions

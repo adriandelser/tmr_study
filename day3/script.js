@@ -139,25 +139,56 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-
-    // Convert the trial data to CSV format and trigger a download
+    function sendCSV(csvContent, filename, callback) {
+        fetch('/.netlify/functions/sendEmail', {  // Adjust the path to match your structure
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                csvContent: csvContent,
+                filename: filename
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message); // Handle the server response
+            if (callback) {
+                callback();  // Call the callback function after sending the email
+            }
+        })
+        .catch(error => {
+            console.error('Error sending the email:', error);
+            if (callback) {
+                callback();  // Call the callback function even if there's an error (optional)
+            }
+        });
+    }
+    
+    // Convert the trial data to CSV format and trigger an email and download
     function downloadCSV() {
-        let csvContent = "data:text/csv;charset=utf-8," 
-            + "french_word,japanese_audio,phase1_response,phase2_response,participant\n";
+        let csvContent = "french_word,japanese_audio,phase1_response,phase2_response,participant\n";
     
         trialData.forEach(function(row) {
             let rowContent = `${row.french_word},${row.japanese_audio},${row.phase1_response},${row.phase2_response},${row.participant}`;
             csvContent += rowContent + "\n";
         });
     
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${participantName}_day_3.csv`);  // Dynamic naming
-        document.body.appendChild(link); // Required for FF
+        const filename = `${participantName}_day_3.csv`;
     
-        link.click(); // This will trigger the download
+        // First, send the CSV via email, then trigger the download
+        sendCSV(csvContent, filename, function() {
+            // After sending the email, trigger the download
+            const encodedUri = encodeURI(`data:text/csv;charset=utf-8,${csvContent}`);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link); // Required for FF
+    
+            link.click(); // This will trigger the download
+        });
     }
+    
     
 
     function handleNameSubmission(){
@@ -245,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_wav.csv")
+    fetch("../assets/liste_mot_wav_short.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");
