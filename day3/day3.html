@@ -130,7 +130,7 @@
         <button id="submit-name">Soumettre</button>
     </div>
     
-    <div id="welcome-overlay" style="display:none;">
+    <div id="welcome-overlay" style="display:none; position: absolute;">
         <p id="welcome-text">
             Débutons par la phase 1.<br><br>
             Vous allez à nouveau entendre la série de mots en japonais. 
@@ -159,7 +159,7 @@
     <input type="text" id="text-input" placeholder="Entrez la traduction ici..." style="display: none;" />
     <button id="submit-translation" style="display: none;">Soumettre</button>    
 
-    <div id="phase2-instructions" style="display:none;">
+    <div id="phase2-instructions" style="display:none;position: absolute;">
         <p>
             Phase 1 terminée, passons à la phase 2.<br><br>
             Maintenant, vous allez à nouveau entendre la série de mots en japonais. 
@@ -167,19 +167,23 @@
             veuillez entrer la traduction française du mot 
             que vous venez d'entendre, puis appuyez sur la touche Entrée ou cliquez sur le bouton "Soumettre". 
             Si vous ne vous rappelez plus de la traduction, mettez un "/" ou autre caractère.
-
+    
             Voici quelques points importants à retenir :
-
+    
             - Aucune correction ou feedback ne sera donné après la saisie de votre réponse.
             - Lorsque vous êtes satisfait de votre réponse, appuyez sur la touche Entrée pour passer au mot suivant.
-            <br><br>
+            - Lors de cette première session, vous ne vous rappellerez certainement que de très peu de mots, 
+            et c'est totalement normal, faites au mieux !<br><br>
             <strong>Appuyez sur Entrée ou appuyez sur le bouton "Continuer" pour commencer l'expérience.</strong>
         </p>
-        <button id="continue-phase2" style="display:none;">Continuer</button>
+        <button id="continue-phase2" style="display:block; margin-top: 20px;">Continuer</button>
     </div>
+    
+    
+    
 
 
-    <div id="thanks-message" style="display:none;">
+    <div id="thanks-message" style="display:none; position: absolute; position: absolute;">
         <p>
             Merci beaucoup pour votre participation !<br><br>
             Un fichier .csv va maintenant se télécharger. Si vous voyez une croix rouge, veuillez m'envoyer le fichier .csv téléchargé. 
