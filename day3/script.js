@@ -139,29 +139,30 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    function sendCSV(csvContent, filename, participantName, day, callback) {
-        fetch('/.netlify/functions/sendEmail', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                csvContent: csvContent,
-                filename: filename,
-                participantName: participantName,
-                day: day
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.message); // Handle the server response
-            if (callback) callback();  // Trigger the callback to download the file
-        })
-        .catch(error => {
-            console.error('Error sending the email:', error);
-            if (callback) callback();  // Still trigger the callback to download the file
-        });
-    }
+
+    // function sendCSV(csvContent, filename, participantName, day, callback) {
+    //     fetch('/.netlify/functions/sendEmail', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             csvContent: csvContent,
+    //             filename: filename,
+    //             participantName: participantName,
+    //             day: day
+    //         })
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log(data.message); // Handle the server response
+    //         if (callback) callback();  // Trigger the callback to download the file
+    //     })
+    //     .catch(error => {
+    //         console.error('Error sending the email:', error);
+    //         if (callback) callback();  // Still trigger the callback to download the file
+    //     });
+    // }
     
     
     function downloadCSV() {
@@ -172,8 +173,8 @@ document.addEventListener("DOMContentLoaded", function() {
             csvContent += rowContent + "\n";
         });
     
-        const filename = `${participantName}_day_3.csv`;
         const day = 3;  // Replace with the correct day for the experiment
+        const filename = `${participantName}_day_${day}.csv`;
     
         // Send the CSV via email, then trigger the download
         sendCSV(csvContent, filename, participantName, day, function() {
@@ -187,8 +188,6 @@ document.addEventListener("DOMContentLoaded", function() {
             link.click(); // This will trigger the download
         });
     }
-    
-    
     
 
     function handleNameSubmission(){
@@ -215,9 +214,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("continue-phase2").click()
             } else if (currentPhase === 2 && textInput.style.display !== 'none') {
                 handleUserInput(); // Handle translation input without feedback in Phase 2
-            } else if (currentPhase === 2 && phase2Instructions.style.display !== 'none') {
-                // Hide Phase 2 instructions and start Phase 2
-                document.getElementById("continue-phase2").click(); // Simulate the click on the continue button
             } else if (currentPhase === 3 && thanksMessage.style.display !== 'none') {
                 handleUserInput(); // End the experiment
             }
@@ -276,7 +272,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_wav_short.csv")
+    fetch("../assets/liste_mot_wav.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");

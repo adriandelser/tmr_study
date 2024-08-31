@@ -141,42 +141,41 @@ document.addEventListener("DOMContentLoaded", function() {
         link.click(); // This will trigger the download
     }
 
-    function sendCSV(csvContent, filename, participantName, day, callback) {
-        fetch('/.netlify/functions/sendEmail', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                csvContent: csvContent,
-                filename: filename,
-                participantName: participantName,
-                day: day
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.message); // Handle the server response
-            if (callback) callback();  // Trigger the callback to download the file
-        })
-        .catch(error => {
-            console.error('Error sending the email:', error);
-            if (callback) callback();  // Still trigger the callback to download the file
-        });
-    }
+    // function sendCSV(csvContent, filename, participantName, day, callback) {
+    //     fetch('/.netlify/functions/sendEmail', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             csvContent: csvContent,
+    //             filename: filename,
+    //             participantName: participantName,
+    //             day: day
+    //         })
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log(data.message); // Handle the server response
+    //         if (callback) callback();  // Trigger the callback to download the file
+    //     })
+    //     .catch(error => {
+    //         console.error('Error sending the email:', error);
+    //         if (callback) callback();  // Still trigger the callback to download the file
+    //     });
+    // }
     
     
     function downloadCSV() {
-        let csvContent = "data:text/csv;charset=utf-8," 
-            + "french_word,japanese_audio,response,participant\n";  // Only include relevant columns
-    
+        let csvContent = "french_word,japanese_audio,phase2_response,participant\n";
+
         trialData.forEach(function(row) {
             let rowContent = `${row.french_word},${row.japanese_audio},${row.response},${row.participant}`;
             csvContent += rowContent + "\n";
         });
     
-        const filename = `${participantName}_day_1.csv`;
         const day = 1;  // Replace with the correct day for the experiment
+        const filename = `${participantName}_day_${day}.csv`;
     
         // Send the CSV via email, then trigger the download
         sendCSV(csvContent, filename, participantName, day, function() {

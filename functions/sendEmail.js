@@ -16,7 +16,7 @@ exports.handler = async function(event, context) {
         // Setup email data
         let mailOptions = {
             from: process.env.GMAIL_USERNAME, // Sender address
-            to: 'adrian.delser@gmail.com', // Your recipient email
+            to: 'camille.alba01@gmail.com', // Your recipient email
             subject: `TMR Experiment Results: ${participantName} - Day ${day}`,  // Dynamic subject line
             text: 'Please find the attached CSV file from the experiment.', // Plain text body
             attachments: [

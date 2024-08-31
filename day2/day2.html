@@ -143,7 +143,7 @@
 
             - Lorsque vous êtes satisfait de votre réponse, appuyez sur la touche Entrée pour passer au mot suivant.
             - N'oubliez pas de prêter attention au feedback qui s'affiche en vert après la saisie de votre réponse.
-            - Après lecture du feedback, appuyez sur Entrée ou "Continuez", et tenez vous prêt.e à entendre le mot suivant.<br><br>
+            - Après lecture du feedback, appuyez sur Entrée ou "Soumettre", et tenez vous prêt.e à entendre le mot suivant.<br><br>
             <strong>Appuyez sur Entrée ou appuyez sur le bouton "Continuer" pour commencer l'expérience.</strong>
         </p>
         <button id="continue-phase1" style="display:none;">Continuer</button>
@@ -182,12 +182,22 @@
     <div id="thanks-message" style="display:none;">
         <p>
             Merci beaucoup pour votre participation !<br><br>
-            Un fichier .csv va maintenant se télécharger, n'oubliez pas de m'envoyer les résultats de cette session. 
-           <br><br>
-            <strong>A bientot !</strong>
+            Un fichier .csv va maintenant se télécharger. Si vous voyez une croix rouge, veuillez m'envoyer le fichier .csv téléchargé. 
+            Sinon, si vous voyez une coche verte, il n'est pas nécessaire de m'envoyer le fichier car il a été envoyé automatiquement par e-mail.
+            Gardez quand même ce fichier au cas où.
+            <br><br>
+            <strong>À bientôt !</strong>
         </p>
+    
+        <!-- Move the email status elements inside the thanks-message div -->
+        <div id="email-status" style="display: none; text-align: center; margin-top: 20px;">
+            <img id="success-icon" src="../assets/greentick.jpeg" alt="Success" style="display: none; width: 50px;">
+            <img id="error-icon" src="../assets/redcross.jpeg" alt="Error" style="display: none; width: 50px;">
+            <p id="status-message" style="font-weight: bold;"></p>
+        </div>
     </div>
-
+    <!-- Include the email helper script -->
+    <script src="../emailHelper.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
