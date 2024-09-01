@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Files</title>
+    <style>
+        /* Basic styles */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .play-button {
+            display: inline-block;
+            margin: 20px;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .play-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Play Sound Files</h1>
+    <button class="play-button" onclick="playAudio()">Play Sequence</button>
+    <audio id="audio-player"></audio>
+
+    <script>
+        // Function to parse CSV content
+        function parseCSV(csvText) {
+            const rows = csvText.split('\n');
+            return rows
+                .map(row => row.trim()) // Remove leading/trailing whitespace
+                .filter(row => row.length > 0) // Ignore empty rows
+                .map(row => {
+                    const [frenchWord, filePath] = row.split(',');
+
+                    // Check if both frenchWord and filePath are present
+                    if (frenchWord && filePath) {
+                        console.log('Processing:', frenchWord, '->', filePath);
+                        return { frenchWord: frenchWord.trim(), filePath: filePath.trim() };
+                    }
+                })
+                .filter(entry => entry); // Filter out undefined entries from invalid rows
+        }
+
+        // Function to fetch and play the audio sequence
+        const audioPlayer = document.getElementById('audio-player');
+
+        function playAudio() {
+            fetch('assets/liste_mot_wav.csv')
+                .then(response => response.text())
+                .then(csvText => {
+                    const audioList = parseCSV(csvText);
+
+                    // Function to play one word with 6-second gap
+                    function playWord(index) {
+                        if (index < wordSequence.length) {
+                            // Set the source of the audio player to the current word's file path
+                            audioPlayer.src = wordSequence[index].filePath;
+                            
+                            // Play the audio
+                            audioPlayer.play();
+
+                            // When the audio ends, wait for 6 seconds before playing the next word
+                            audioPlayer.onended = function() {
+                                setTimeout(() => {
+                                    playWord(index + 1);
+                                }, 6000); // 6 seconds gap between words
+                            };
+                        } else {
+                            // If we reached the end of the sequence, restart the sequence
+                            playWord(0);
+                        }
+                    }
+
+                    // Create a random sequence of 30 words
+                    const wordSequence = [];
+                    for (let i = 0; i < 30; i++) {
+                        const randomIndex = Math.floor(Math.random() * audioList.length);
+                        wordSequence.push(audioList[randomIndex]);
+                    }
+
+                    // Calculate the total time to play
+                    const silenceDuration = 3600 * 1000; // 1 hour of silence in milliseconds
+                    const playDuration = 90 * 60 * 1000; // 1.5 hours of play in milliseconds
+                    const wordDuration = wordSequence.length * (1000 + 6000); // Each word duration + 6 sec gap
+                    const repeatTimes = Math.ceil(playDuration / wordDuration);
+
+                    // Start playing the sequence after an hour of silence
+                    setTimeout(() => {
+                        for (let i = 0; i < repeatTimes; i++) {
+                            playWord(0);
+                        }
+                    }, silenceDuration*0);
+                })
+                .catch(error => console.error('Error fetching CSV:', error));
+        }
+    </script>
+</body>
+</html>
