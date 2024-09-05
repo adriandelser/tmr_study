@@ -1,3 +1,3 @@
 [build]
   publish = "."  # Adjust this to your output directory
-  functions = "netlify/functions"  # Directory for serverless functions
+  functions = "functions"  # Directory for serverless functions
