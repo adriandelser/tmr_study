@@ -187,18 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
         playNextWordPhase1(); // Start Phase 1 word playback
     });
 
-    // // Add event listener for the Continue button in Phase 2
-    // document.getElementById("continue-phase2").addEventListener("click", function() {
-    //     document.getElementById("continue-phase2").style.display = 'none'; // Hide the button after clicking
-    //     phase2Instructions.style.display = 'none'; // Hide the phase 2 instructions
-    //     wordDisplay.style.display = 'block'; // Show word display
-    //     textInput.style.display = 'block'; // Show the text input during Phase 2
-    //     submitTranslationButton.style.display = 'block'; // Show the submit button in Phase 2
-    //     currentPhase = 2; // Set the current phase to 2
-    //     shuffledWords = shuffleArray([...wordAudioPairs]); // Reshuffle the array
-    //     currentIndex = 0; // Reset the index for Phase 2
-    //     playNextWordPhase2(); // Start Phase 2 word playback
-    // });
+    
 
     // Add event listener for the submit button in Phase 1 and Phase 2
     submitTranslationButton.addEventListener("click", function() {
@@ -211,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_mp3_short.csv")
+    fetch("../assets/liste_mot_mp3.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");
