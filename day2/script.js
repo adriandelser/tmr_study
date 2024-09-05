@@ -44,11 +44,19 @@ document.addEventListener("DOMContentLoaded", function() {
     function playNextWordPhase1() {
         if (currentIndex < shuffledWords.length) {
             const selectedPair = shuffledWords[currentIndex];
-            audioPlayer.src = selectedPair.audio;
+            const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
+            
+            // Add error handling
+            audioPlayer.onerror = function() {
+                console.error(`Error playing audio: ${selectedPair.audio.src}. Skipping to the next word.`);
+                currentIndex++;
+                playNextWordPhase1(); // Skip to the next word
+            };
+    
             audioPlayer.play();
             textInput.value = '';
             feedbackDisplay.textContent = ''; // Clear previous feedback
-
+    
             // Wait for the audio to end before prompting user input
             audioPlayer.onended = function() {
                 textInput.focus();
@@ -63,15 +71,24 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("continue-phase2").style.display = 'block'; // Show the continue button
         }
     }
+    
 
     function playNextWordPhase2() {
         if (currentIndex < shuffledWords.length) {
             const selectedPair = shuffledWords[currentIndex];
-            audioPlayer.src = selectedPair.audio;
+            const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
+    
+            // Add error handling
+            audioPlayer.onerror = function() {
+                console.error(`Error playing audio: ${selectedPair.audio.src}. Skipping to the next word.`);
+                currentIndex++;
+                playNextWordPhase2(); // Skip to the next word
+            };
+    
             audioPlayer.play();
             textInput.value = '';
             feedbackDisplay.textContent = ''; // No feedback in Phase 2
-
+    
             // Wait for the audio to end before prompting user input
             audioPlayer.onended = function() {
                 textInput.focus();
@@ -86,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
             downloadCSV(); // Download the CSV file at the end
         }
     }
+    
 
     function handleUserInput() {
         if (currentPhase === 1 && textInput.style.display !== 'none') {
@@ -140,36 +158,15 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
 
-    // function sendCSV(csvContent, filename, participantName, day, callback) {
-    //     fetch('/.netlify/functions/sendEmail', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify({
-    //             csvContent: csvContent,
-    //             filename: filename,
-    //             participantName: participantName,
-    //             day: day
-    //         })
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log(data.message); // Handle the server response
-    //         if (callback) callback();  // Trigger the callback to download the file
-    //     })
-    //     .catch(error => {
-    //         console.error('Error sending the email:', error);
-    //         if (callback) callback();  // Still trigger the callback to download the file
-    //     });
-    // }
-    
-    
     function downloadCSV() {
         let csvContent = "french_word,japanese_audio,phase1_response,phase2_response,participant\n";
     
         trialData.forEach(function(row) {
-            let rowContent = `${row.french_word},${row.japanese_audio},${row.phase1_response},${row.phase2_response},${row.participant}`;
+            // Extract the audio source from the HTMLAudioElement
+            let audioSrc = row.japanese_audio.src; 
+            // let rowContent = `${row.french_word},${audioSrc},${row.response},${row.participant}`;
+            let rowContent = `${row.french_word},${audioSrc},${row.phase1_response},${row.phase2_response},${row.participant}`;
+
             csvContent += rowContent + "\n";
         });
     
@@ -220,19 +217,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-
-
-        // function startPhase1() {
-    //     nameInputOverlay.style.display = 'none'; // Hide the name input overlay
-    //     wordDisplay.style.display = 'block';
-    //     textInput.style.display = 'block'; // Show the text input
-    //     submitTranslationButton.style.display = 'block'; // Show the submit button
-    //     wordDisplay.textContent = "Écoutez attentivement le mot et entrez la traduction."; // Instruction to listen
-    //     shuffledWords = shuffleArray([...wordAudioPairs]); // Reshuffle the array
-    //     currentPhase = 1;  // Update phase to Phase 1
-    
-    //     playNextWordPhase1();
-    // }
     // Add event listener for the Continue button in Phase 1
     document.getElementById("continue-phase1").addEventListener("click", function() {
         document.getElementById("continue-phase1").style.display = 'none'; // Hide the button after clicking
@@ -272,15 +256,16 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_wav.csv")
+    fetch("../assets/liste_mot_mp3.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");
             wordAudioPairs = lines.map(line => {
                 const [word, audioPath] = line.split(',');
+                const audio = new Audio(`../${audioPath.trim()}`); // Create an Audio object to preload the file
                 return {
                     word: word.trim(),
-                    audio: `../${audioPath.trim()}` // Adjust the audio path
+                    audio: audio // Store the preloaded Audio object
                 };
             });
         });

@@ -67,11 +67,19 @@ document.addEventListener("DOMContentLoaded", function() {
     function playNextWordPhase1() {
         if (currentIndex < shuffledWords.length) {
             const selectedPair = shuffledWords[currentIndex];
-            audioPlayer.src = selectedPair.audio;
+            const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
+            
+            // Add error handling
+            audioPlayer.onerror = function() {
+                console.error(`Error playing audio: ${selectedPair.audio.src}. Skipping to the next word.`);
+                currentIndex++;
+                playNextWordPhase1(); // Skip to the next word
+            };
+    
             audioPlayer.play();
             textInput.value = '';
-            feedbackDisplay.textContent = ''; // No feedback in Phase 2
-
+            feedbackDisplay.textContent = ''; // Clear previous feedback
+    
             // Wait for the audio to end before prompting user input
             audioPlayer.onended = function() {
                 textInput.focus();
@@ -86,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function() {
             downloadCSV(); // Download the CSV file at the end
         }
     }
+    
 
     function handleUserInput() {
         if (currentPhase === 1 && textInput.style.display !== 'none') {
@@ -118,20 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
             currentIndex++;
             setTimeout(playNextWordPhase1, 500); // Wait 0.5 seconds before moving to next word
     
-        // } else if (currentPhase === 2 && textInput.style.display !== 'none') {
-        //     if (!textInput.value.trim()) {
-        //         alert("Veuillez tenter de répondre ou entrez un caractère si vous ne connaissez pas la réponse.");
-        //         return;  // Prevent further execution until the user enters something
-        //     }
-    
-        //     // Find the trial entry and update the Phase 2 response
-        //     let trial = trialData.find(trial => trial.french_word === shuffledWords[currentIndex].word);
-        //     if (trial) {
-        //         trial.phase2_response = textInput.value.trim();
-        //     }
-    
-        //     currentIndex++;
-        //     playNextWordPhase2();
+        
         } else if (currentPhase === 2 && thanksMessage.style.display !== 'none') {
             // End the experiment
             thanksMessage.style.display = 'none';
@@ -139,36 +135,16 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    // function sendCSV(csvContent, filename, participantName, day, callback) {
-    //     fetch('/.netlify/functions/sendEmail', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify({
-    //             csvContent: csvContent,
-    //             filename: filename,
-    //             participantName: participantName,
-    //             day: day
-    //         })
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log(data.message); // Handle the server response
-    //         if (callback) callback();  // Trigger the callback to download the file
-    //     })
-    //     .catch(error => {
-    //         console.error('Error sending the email:', error);
-    //         if (callback) callback();  // Still trigger the callback to download the file
-    //     });
-    // }
+
     
     
     function downloadCSV() {
         let csvContent = "french_word,japanese_audio,phase1_response,participant\n";
     
         trialData.forEach(function(row) {
-            let rowContent = `${row.french_word},${row.japanese_audio},${row.phase1_response},${row.participant}`;
+            // Extract the audio source from the HTMLAudioElement
+            let audioSrc = row.japanese_audio.src; 
+            let rowContent = `${row.french_word},${audioSrc},${row.phase1_response},${row.participant}`;
             csvContent += rowContent + "\n";
         });
     
@@ -187,6 +163,8 @@ document.addEventListener("DOMContentLoaded", function() {
             link.click(); // This will trigger the download
         });
     }
+    
+    
     
 
     function handleNameSubmission(){
@@ -254,16 +232,18 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_wav.csv")
-        .then(response => response.text())
-        .then(data => {
-            const lines = data.split('\n').filter(line => line.trim() !== "");
-            wordAudioPairs = lines.map(line => {
-                const [word, audioPath] = line.split(',');
-                return {
-                    word: word.trim(),
-                    audio: `../${audioPath.trim()}` // Adjust the audio path
-                };
-            });
+    fetch("../assets/liste_mot_mp3.csv")
+    .then(response => response.text())
+    .then(data => {
+        const lines = data.split('\n').filter(line => line.trim() !== "");
+        wordAudioPairs = lines.map(line => {
+            const [word, audioPath] = line.split(',');
+            const audio = new Audio(`../${audioPath.trim()}`); // Create an Audio object to preload the file
+            return {
+                word: word.trim(),
+                audio: audio // Store the preloaded Audio object
+            };
         });
+    });
+    
 });

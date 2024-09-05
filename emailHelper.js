@@ -13,45 +13,28 @@ function sendCSV(csvContent, filename, participantName, day, callback) {
             day: day
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) { // Check if the response is not OK (i.e., status code is not in the range 200-299)
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         console.log(data.message); // Handle the server response
         showEmailStatus(true); // Show success icon and message
         if (callback) callback();  // Trigger the callback to download the file
     })
     .catch(error => {
+        // console.log("MUHAHAH Print something please")
         console.error('Error sending the email:', error);
         showEmailStatus(false); // Show error icon and message
         if (callback) callback();  // Still trigger the callback to download the file
     });
 }
+
     
 
-// function sendCSV(csvContent, filename, participantName, day, callback) {
-//     fetch('/.netlify/functions/sendEmail', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//             csvContent: csvContent,
-//             filename: filename,
-//             participantName: participantName,
-//             day: day
-//         })
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         console.log(data.message); // Handle the server response
-//         showEmailStatus(true); // Show success icon and message
-//         if (callback) callback();  // Trigger the callback to download the file
-//     })
-//     .catch(error => {
-//         console.error('Error sending the email:', error);
-//         showEmailStatus(false); // Show error icon and message
-//         if (callback) callback();  // Still trigger the callback to download the file
-//     });
-// }
+
 
 function showEmailStatus(success) {
     const statusContainer = document.getElementById('email-status');

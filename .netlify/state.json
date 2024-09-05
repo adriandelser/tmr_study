@@ -1,0 +1,19 @@
+{
+	"geolocation": {
+		"data": {
+			"city": "Brussels",
+			"country": {
+				"code": "BE",
+				"name": "Belgium"
+			},
+			"subdivision": {
+				"code": "BRU",
+				"name": "Brussels Capital"
+			},
+			"timezone": "Europe/Brussels",
+			"latitude": 50.8534,
+			"longitude": 4.347
+		},
+		"timestamp": 1725226444919
+	}
+}
