@@ -41,34 +41,13 @@ document.addEventListener("DOMContentLoaded", function() {
         currentPhase = 1;  // Update phase to Phase 1
     }
 
-    // function playNextWordPhase1() {
-    //     if (currentIndex < shuffledWords.length) {
-    //         const selectedPair = shuffledWords[currentIndex];
-    //         audioPlayer.src = selectedPair.audio;
-    //         audioPlayer.play();
-    //         textInput.value = '';
-    //         feedbackDisplay.textContent = ''; // Clear previous feedback
-
-    //         // Wait for the audio to end before prompting user input
-    //         audioPlayer.onended = function() {
-    //             textInput.focus();
-    //         };
-    //     } else {
-    //         // Move to Phase 2
-    //         currentPhase = 2;
-    //         currentIndex = 0;
-    //         wordDisplay.style.display = 'none';
-    //         feedbackDisplay.style.display = 'none'; // Hide feedback in Phase 2
-    //         phase2Instructions.style.display = 'block';
-    //         document.getElementById("continue-phase2").style.display = 'block'; // Show the continue button
-    //     }
-    // }
 
     function playNextWordPhase1() {
         if (currentIndex < shuffledWords.length) {
             const selectedPair = shuffledWords[currentIndex];
             const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
-            
+            console.log(audioPlayer)
+
             // Add error handling
             audioPlayer.onerror = function() {
                 console.error(`Error playing audio: ${selectedPair.audio.src}. Skipping to the next word.`);
@@ -233,17 +212,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Load the CSV file and initialize the word list
     fetch("../assets/liste_mot_mp3_short.csv")
-    .then(response => response.text())
-    .then(data => {
-        const lines = data.split('\n').filter(line => line.trim() !== "");
-        wordAudioPairs = lines.map(line => {
-            const [word, audioPath] = line.split(',');
-            const audio = new Audio(`../${audioPath.trim()}`); // Create an Audio object to preload the file
-            return {
-                word: word.trim(),
-                audio: audio // Store the preloaded Audio object
-            };
+        .then(response => response.text())
+        .then(data => {
+            const lines = data.split('\n').filter(line => line.trim() !== "");
+            wordAudioPairs = lines.map(line => {
+                const [word, audioPath] = line.split(',');
+                const audio = new Audio(`../${audioPath.trim()}`); // Create an Audio object to preload the file
+                return {
+                    word: word.trim(),
+                    audio: audio // Store the preloaded Audio object
+                };
+            });
         });
-    });
     
 });

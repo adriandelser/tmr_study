@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const selectedPair = shuffledWords[currentIndex];
             wordDisplay.textContent = selectedPair.word;
             const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
-    
+            console.log(audioPlayer)
             // Add error handling
             audioPlayer.onerror = function() {
                 console.error(`Error playing audio: ${selectedPair.audio.src}. Skipping to the next word.`);
@@ -235,9 +235,10 @@ document.addEventListener("DOMContentLoaded", function() {
             const lines = data.split('\n').filter(line => line.trim() !== "");
             wordAudioPairs = lines.map(line => {
                 const [word, audioPath] = line.split(',');
+                const audio = new Audio(`../${audioPath.trim()}`); // Create an Audio object to preload the file
                 return {
                     word: word.trim(),
-                    audio: `../${audioPath.trim()}`
+                    audio: audio // Store the preloaded Audio object
                 };
             });
         });
