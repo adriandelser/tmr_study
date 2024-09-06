@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentIndex = 0;
     let shuffledWords = [];
     let trialData = []; // Array to hold all trial data
+    let isAudioPlaying = false; // Flag to track if the audio is playing
+
 
     feedbackDisplay.id = "feedback-display"; // Set ID for feedback display
     feedbackDisplay.style.textAlign = "center"; // Center feedback text
@@ -44,6 +46,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function playNextWordPhase1() {
         if (currentIndex < shuffledWords.length) {
+            textInput.value = '';
+
+            isAudioPlaying = true; // Audio is playing, block input
+            textInput.disabled = true; // Disable input while audio is playing
+            submitTranslationButton.disabled = true; // Disable submit button
+
             const selectedPair = shuffledWords[currentIndex];
             const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
             console.log(audioPlayer)
@@ -56,13 +64,17 @@ document.addEventListener("DOMContentLoaded", function() {
             };
     
             audioPlayer.play();
-            textInput.value = '';
             feedbackDisplay.textContent = ''; // Clear previous feedback
     
             // Wait for the audio to end before prompting user input
+            // When the audio finishes, allow user input
             audioPlayer.onended = function() {
+                isAudioPlaying = false; // Audio finished, allow input
+                textInput.disabled = false; // Enable input again
+                submitTranslationButton.disabled = false; // Enable submit button again
                 textInput.focus();
             };
+
         } else {
             // Show thank you message
             wordDisplay.style.display = 'none';
@@ -76,11 +88,20 @@ document.addEventListener("DOMContentLoaded", function() {
     
 
     function handleUserInput() {
+
+        // Prevent input if the audio is still playing
+        if (isAudioPlaying) {
+            showInputError(); // Show the red outline and shake effect
+            return;
+        }
+
         if (currentPhase === 1 && textInput.style.display !== 'none') {
             if (!textInput.value.trim()) {
+                showInputError(); // Show the red outline and shake effect for empty input
                 alert("Veuillez tenter de répondre ou entrez un caractère si vous ne connaissez pas la réponse.");
                 return;  // Prevent further execution until the user enters something
             }
+            // isAudioPlaying = true;
             
             // Check if the word is already in trialData
             let trial = trialData.find(trial => trial.french_word === shuffledWords[currentIndex].word);
@@ -91,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     french_word: shuffledWords[currentIndex].word,
                     japanese_audio: shuffledWords[currentIndex].audio,
                     phase1_response: textInput.value.trim(),  // Store the response for Phase 1
-                    phase2_response: "",  // Placeholder for Phase 2 response
+                    // phase2_response: "",  // Placeholder for Phase 2 response
                     participant: participantName
                 };
                 trialData.push(trial);
@@ -102,7 +123,9 @@ document.addEventListener("DOMContentLoaded", function() {
     
             // Show feedback (correct translation) in Phase 1
             // feedbackDisplay.textContent = `Réponse Correcte: ${shuffledWords[currentIndex].word}`;
-    
+            // Disable input during the 0.5-second delay
+            textInput.disabled = true; 
+            submitTranslationButton.disabled = true; 
             currentIndex++;
             setTimeout(playNextWordPhase1, 500); // Wait 0.5 seconds before moving to next word
     
@@ -115,7 +138,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
 
-    
+    // Function to show the input error with red outline and shake effect
+    function showInputError() {
+        textInput.classList.add('input-error');  // Add the red outline and shake effect
+        setTimeout(() => {
+            textInput.classList.remove('input-error');  // Remove it after 500ms
+        }, 500);
+    }
     
     function downloadCSV() {
         let csvContent = "french_word,japanese_audio,phase1_response,participant\n";
@@ -164,10 +193,10 @@ document.addEventListener("DOMContentLoaded", function() {
             } else if (currentPhase === 1 && welcomeOverlay.style.display !== 'none') {
                 // Hide welcome overlay and start Phase 1 instructions
                 document.getElementById("continue-phase1").click(); // Simulate the click on the continue button
-            } else if (currentPhase === 1 && textInput.style.display !== 'none') {
-                handleUserInput(); // Handle translation input with feedback in Phase 1
-            } else if (currentPhase === 2 && thanksMessage.style.display !== 'none') {
-                handleUserInput(); // End the experiment
+            } else if (currentPhase === 1 && textInput.style.display !== 'none' && !isAudioPlaying && !textInput.disabled) {
+                handleUserInput(); // Handle translation input in Phase 1 only if audio has ended and input is enabled
+            } else if (isAudioPlaying || textInput.disabled) {
+                showInputError(); // Show error if Enter is pressed during the transition or audio playback
             }
         }
     });
@@ -189,9 +218,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     
 
-    // Add event listener for the submit button in Phase 1 and Phase 2
+    // Add event listener for the submit button in Phase 2
     submitTranslationButton.addEventListener("click", function() {
-        handleUserInput();
+        if (!isAudioPlaying && !textInput.disabled) {
+            handleUserInput(); // Handle submission only if audio has ended and input is enabled
+        } else {
+            showInputError(); // Show error if the submit button is clicked during the transition or audio playback
+        }
     });
 
     // Add event listener for the name
@@ -200,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_mp3.csv")
+    fetch("../assets/liste_mot_mp3_short.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");

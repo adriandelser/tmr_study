@@ -192,9 +192,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("continue-phase2").click(); // Simulate the click on the continue button
             } else if (currentPhase === 2 && textInput.style.display !== 'none') {
                 handleUserInput(); // Handle translation input in Phase 2
-            } else if (currentPhase === 3 && thanksMessage.style.display !== 'none') {
-                handleUserInput(); // End the experiment
-            }
+            } 
+            // else if (currentPhase === 3 && thanksMessage.style.display !== 'none') {
+            //     handleUserInput(); // End the experiment
+            // }
         }
     });
 
@@ -229,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_mp3.csv")
+    fetch("../assets/liste_mot_mp3_short.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");
