@@ -46,15 +46,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function playNextWordPhase1() {
         if (currentIndex < shuffledWords.length) {
-            textInput.value = '';
-
+            
             isAudioPlaying = true; // Audio is playing, block input
             textInput.disabled = true; // Disable input while audio is playing
             submitTranslationButton.disabled = true; // Disable submit button
 
             const selectedPair = shuffledWords[currentIndex];
             const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
-            console.log(audioPlayer)
 
             // Add error handling
             audioPlayer.onerror = function() {
@@ -64,6 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
             };
     
             audioPlayer.play();
+            textInput.value = '';
             feedbackDisplay.textContent = ''; // Clear previous feedback
     
             // Wait for the audio to end before prompting user input
@@ -101,7 +100,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert("Veuillez tenter de répondre ou entrez un caractère si vous ne connaissez pas la réponse.");
                 return;  // Prevent further execution until the user enters something
             }
-            // isAudioPlaying = true;
             
             // Check if the word is already in trialData
             let trial = trialData.find(trial => trial.french_word === shuffledWords[currentIndex].word);

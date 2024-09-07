@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentIndex = 0;
     let shuffledWords = [];
     let trialData = []; // Array to hold all trial data
-    // let globalKeydownEnabled = true; // Flag to control the global keydown listener
+    let isAudioPlaying = false; // Flag to track if the audio is playing
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -38,10 +38,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function playNextWordPhase1() {
         if (currentIndex < shuffledWords.length) {
+
             const selectedPair = shuffledWords[currentIndex];
             wordDisplay.textContent = selectedPair.word;
             const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
-            console.log(audioPlayer)
+            // console.log(audioPlayer)
             // Add error handling
             audioPlayer.onerror = function() {
                 console.error(`Error playing audio: ${selectedPair.audio.src}. Skipping to the next word.`);
@@ -81,6 +82,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function playNextWordPhase2() {
         if (currentIndex < shuffledWords.length) {
+
+            isAudioPlaying = true; // Audio is playing, block input
+            textInput.disabled = true; // Disable input while audio is playing
+            submitTranslationButton.disabled = true; // Disable submit button
+
             const selectedPair = shuffledWords[currentIndex];
             const audioPlayer = selectedPair.audio; // Use the preloaded Audio object
     
@@ -96,6 +102,9 @@ document.addEventListener("DOMContentLoaded", function() {
     
             // Wait for the audio to end before prompting user input
             audioPlayer.onended = function() {
+                isAudioPlaying = false; // Audio finished, allow input
+                textInput.disabled = false; // Enable input again
+                submitTranslationButton.disabled = false; // Enable submit button again
                 textInput.focus();
             };
     
@@ -112,8 +121,17 @@ document.addEventListener("DOMContentLoaded", function() {
     
 
     function handleUserInput() {
+
+        // Prevent input if the audio is still playing
+        if (isAudioPlaying) {
+            showInputError(); // Show the red outline and shake effect
+            return;
+        }
+
         if (currentPhase === 2 && !textInput.value.trim()) {
+            showInputError(); // Show the red outline and shake effect for empty input
             alert("Veuiller tenter de répondre ou entrez un caractére si vous ne connaissez pas la réponse.")
+            return;
         }
         else if (currentPhase === 2 && textInput.style.display !== 'none') {
             // Collect data for this trial
@@ -223,10 +241,21 @@ document.addEventListener("DOMContentLoaded", function() {
         startPhase2(); // Start Phase 2
     });
 
+    // Function to show the input error with red outline and shake effect
+    function showInputError() {
+        textInput.classList.add('input-error');  // Add the red outline and shake effect
+        setTimeout(() => {
+            textInput.classList.remove('input-error');  // Remove it after 500ms
+        }, 500);
+    }
+
     // Add event listener for the submit button in Phase 2
     submitTranslationButton.addEventListener("click", function() {
-        // console.log('Submit button clicked in Phase 2'); // Debugging info
-        handleUserInput();
+        if (!isAudioPlaying && !textInput.disabled) {
+            handleUserInput(); // Handle submission only if audio has ended and input is enabled
+        } else {
+            showInputError(); // Show error if the submit button is clicked during the transition or audio playback
+        }
     });
 
     // Load the CSV file and initialize the word list
