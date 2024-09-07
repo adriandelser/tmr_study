@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 trial.phase1_response = textInput.value.trim();
             }
             
-            // Disable input during the 0.5-second delay
+            // Disable input during the 3.0-second delay
             textInput.disabled = true; 
             submitTranslationButton.disabled = true; 
             // Show feedback (correct translation) in Phase 1
@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_mp3_short.csv")
+    fetch("../assets/liste_mot_mp3.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");

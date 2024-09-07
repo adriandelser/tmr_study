@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Load the CSV file and initialize the word list
-    fetch("../assets/liste_mot_mp3_short.csv")
+    fetch("../assets/liste_mot_mp3.csv")
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n').filter(line => line.trim() !== "");
